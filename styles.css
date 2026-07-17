@@ -1,0 +1,355 @@
+:root {
+    --bg-color: #000000;
+    --surface: #1a1a1a;
+    --primary: #32d74b;
+    --primary-active: #28a739;
+    --danger: #ff453a;
+    --danger-active: #cc362d;
+    --warning: #ffd60a;
+    --warning-active: #ccab08;
+    --secondary: #0a84ff; /* iOS Blue */
+    --secondary-active: #006ee6;
+    --text-main: #ffffff;
+    --text-muted: #98989d;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.fullscreen-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 10px;
+    cursor: pointer;
+    z-index: 100;
+    transition: color 0.2s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fullscreen-btn:hover, .fullscreen-btn:active {
+    color: var(--text-main);
+    transform: scale(1.1);
+}
+
+.install-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #333;
+    color: var(--text-main);
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.install-btn:hover, .install-btn:active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.app-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.timer-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+.timer-display-container {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.timer-display {
+    font-family: 'Poppins', sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-size: min(32vw, 45vh); 
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-main);
+    letter-spacing: -0.05em;
+}
+
+@media (min-width: 1200px) and (min-height: 800px) {
+    .timer-display {
+        font-size: 320px;
+    }
+}
+
+.timer-display.danger {
+    color: var(--danger);
+    animation: flash 1s infinite;
+}
+
+@keyframes flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.controls-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 3vh;
+}
+
+.main-controls {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    max-width: 800px;
+    width: 100%;
+}
+
+.btn-massive {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 500;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.btn-primary { background: rgba(50, 215, 75, 0.15); color: var(--primary); border: 2px solid rgba(50, 215, 75, 0.4); }
+.btn-primary:active { background: rgba(50, 215, 75, 0.3); transform: scale(0.95); }
+
+.btn-warning { background: rgba(255, 214, 10, 0.15); color: var(--warning); border: 2px solid rgba(255, 214, 10, 0.4); }
+.btn-warning:active { background: rgba(255, 214, 10, 0.3); transform: scale(0.95); }
+
+.btn-danger { background: rgba(255, 69, 58, 0.15); color: var(--danger); border: 2px solid rgba(255, 69, 58, 0.4); }
+.btn-danger:active { background: rgba(255, 69, 58, 0.3); transform: scale(0.95); }
+
+.btn-secondary { background: rgba(10, 132, 255, 0.15); color: var(--secondary); border: 2px solid rgba(10, 132, 255, 0.4); }
+.btn-secondary:active { background: rgba(10, 132, 255, 0.3); transform: scale(0.95); }
+
+/* ========================================= */
+/* Modal Styles                              */
+/* ========================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.modal-overlay.active {
+    display: flex;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: #1c1c1e;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    border: 1px solid #333;
+    animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.modal-header h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.section-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.timer-settings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.presets {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-preset {
+    background: #2c2c2e;
+    border: 1px solid #444;
+    color: var(--text-main);
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.btn-preset:active {
+    background: #444;
+    transform: scale(0.96);
+}
+
+.manual-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #2c2c2e;
+    padding: 8px 16px;
+    border-radius: 30px;
+    border: 1px solid #444;
+}
+
+.manual-input input {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 500;
+    width: 45px;
+    text-align: center;
+    outline: none;
+}
+
+.manual-input input::placeholder {
+    color: #888;
+}
+
+.manual-input input[type=number]::-webkit-inner-spin-button, 
+.manual-input input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+.manual-input span {
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.btn-set {
+    background: var(--text-main);
+    color: var(--bg-color);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-set:active {
+    transform: scale(0.95);
+}
+
+/* ========================================= */
+/* Media Queries                             */
+/* ========================================= */
+@media (max-width: 500px) {
+    .btn-massive {
+        width: 75px;
+        height: 75px;
+        font-size: 1rem;
+    }
+    .main-controls { gap: 15px; }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+    .app-container { padding: 0.5rem; }
+    .timer-display-container { margin-bottom: 0.5rem; }
+    .main-controls { gap: 20px; }
+    .btn-massive {
+        width: 70px;
+        height: 70px;
+        font-size: 1rem;
+    }
+    .controls-section { padding-bottom: 1vh; }
+    .fullscreen-btn { top: 10px; right: 10px; padding: 5px; }
+}
