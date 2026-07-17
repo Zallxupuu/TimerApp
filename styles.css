@@ -130,6 +130,15 @@ body {
     50% { opacity: 0.5; }
 }
 
+body.times-up {
+    animation: timesUpFlash 0.5s infinite;
+}
+
+@keyframes timesUpFlash {
+    0%, 100% { background-color: var(--bg-color); }
+    50% { background-color: #5a0000; } /* Dark aggressive red */
+}
+
 .controls-section {
     width: 100%;
     display: flex;

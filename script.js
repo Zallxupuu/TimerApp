@@ -6,7 +6,6 @@ const btnFullscreen = document.getElementById('btn-fullscreen');
 const presetButtons = document.querySelectorAll('.btn-preset');
 const alarmSound = document.getElementById('alarm-sound');
 
-// Modal & Settings Elements
 const btnOpenSettings = document.getElementById('btn-open-settings');
 const btnCloseModal = document.getElementById('btn-close-modal');
 const settingsModal = document.getElementById('settings-modal');
@@ -32,6 +31,15 @@ function formatTime(totalSeconds) {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
+function saveState() {
+    localStorage.setItem('timeKeeperState', JSON.stringify({
+        timeLeft,
+        defaultTime,
+        isRunning,
+        timestamp: Date.now()
+    }));
+}
+
 function updateDisplay() {
     mainTimer.textContent = formatTime(timeLeft);
     if (timeLeft <= 10 && timeLeft > 0) {
@@ -41,12 +49,54 @@ function updateDisplay() {
     }
 }
 
-function openModal() {
-    settingsModal.style.display = 'flex';
+function tick() {
+    timeLeft--;
+    updateDisplay();
+    saveState();
+    
+    if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        isRunning = false;
+        btnStart.style.display = 'flex';
+        btnPause.style.display = 'none';
+        saveState();
+        playAlarm();
+        document.body.classList.add('times-up');
+    }
 }
 
-function closeModal() {
-    settingsModal.style.display = 'none';
+function startTimer() {
+    if (timeLeft <= 0) return;
+    document.body.classList.remove('times-up');
+    if (!isRunning) {
+        isRunning = true;
+        btnStart.style.display = 'none';
+        btnPause.style.display = 'flex';
+        saveState();
+        
+        timerInterval = setInterval(tick, 1000);
+    }
+}
+
+function pauseTimer() {
+    if (isRunning) {
+        clearInterval(timerInterval);
+        isRunning = false;
+        btnStart.style.display = 'flex';
+        btnPause.style.display = 'none';
+        saveState();
+    }
+}
+
+function resetTimer() {
+    clearInterval(timerInterval);
+    isRunning = false;
+    timeLeft = defaultTime;
+    updateDisplay();
+    btnStart.style.display = 'flex';
+    btnPause.style.display = 'none';
+    saveState();
+    document.body.classList.remove('times-up');
 }
 
 function setTimer(totalSeconds) {
@@ -58,60 +108,30 @@ function setTimer(totalSeconds) {
     
     btnStart.style.display = 'flex';
     btnPause.style.display = 'none';
-    closeModal(); // Auto-close modal after setting
+    
+    saveState();
+    closeModal();
+    document.body.classList.remove('times-up');
 }
 
-// --- Main Controls ---
+btnStart.addEventListener('click', startTimer);
+btnPause.addEventListener('click', pauseTimer);
+btnReset.addEventListener('click', resetTimer);
 
-btnStart.addEventListener('click', () => {
-    if (timeLeft <= 0) return;
-    if (!isRunning) {
-        isRunning = true;
-        btnStart.style.display = 'none';
-        btnPause.style.display = 'flex';
-        
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            updateDisplay();
-            
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                isRunning = false;
-                btnStart.style.display = 'flex';
-                btnPause.style.display = 'none';
-                playAlarm();
-            }
-        }, 1000);
-    }
-});
+function openModal() {
+    settingsModal.style.display = 'flex';
+}
 
-btnPause.addEventListener('click', () => {
-    if (isRunning) {
-        clearInterval(timerInterval);
-        isRunning = false;
-        btnStart.style.display = 'flex';
-        btnPause.style.display = 'none';
-    }
-});
+function closeModal() {
+    settingsModal.style.display = 'none';
+}
 
-btnReset.addEventListener('click', () => {
-    clearInterval(timerInterval);
-    isRunning = false;
-    timeLeft = defaultTime;
-    updateDisplay();
-    btnStart.style.display = 'flex';
-    btnPause.style.display = 'none';
-});
-
-// --- Modal Controls ---
 btnOpenSettings.addEventListener('click', openModal);
 btnCloseModal.addEventListener('click', closeModal);
 
 settingsModal.addEventListener('click', (e) => {
     if (e.target === settingsModal) closeModal();
 });
-
-// --- Setting Time ---
 
 presetButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -138,8 +158,6 @@ btnSetManual.addEventListener('click', () => {
     inputMin.value = '';
     inputSec.value = '';
 });
-
-// --- Fullscreen ---
 
 btnFullscreen.addEventListener('click', () => {
     if (!document.fullscreenElement) {
@@ -174,10 +192,45 @@ btnInstall.addEventListener('click', async () => {
     }
 });
 
-// Hide install button if already in standalone mode
 if (window.matchMedia('(display-mode: standalone)').matches) {
-    btnInstall.style.display = 'none';
+    if(btnInstall) btnInstall.style.display = 'none';
+}
+
+// --- Restore State Logic ---
+function loadState() {
+    const saved = localStorage.getItem('timeKeeperState');
+    if (saved) {
+        try {
+            const state = JSON.parse(saved);
+            defaultTime = state.defaultTime || (10 * 60);
+            
+            if (state.isRunning) {
+                const passedSeconds = Math.floor((Date.now() - state.timestamp) / 1000);
+                timeLeft = state.timeLeft - passedSeconds;
+                
+                if (timeLeft > 0) {
+                    updateDisplay();
+                    startTimer(); // Resume automatically
+                } else {
+                    timeLeft = 0;
+                    isRunning = false;
+                    updateDisplay();
+                }
+            } else {
+                timeLeft = state.timeLeft;
+                isRunning = false;
+                updateDisplay();
+                btnStart.style.display = 'flex';
+                btnPause.style.display = 'none';
+            }
+        } catch (e) {
+            console.error("Failed to load state", e);
+            updateDisplay();
+        }
+    } else {
+        updateDisplay();
+    }
 }
 
 // Init
-updateDisplay();
+loadState();
