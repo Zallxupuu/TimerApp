@@ -11,6 +11,12 @@
     --secondary-active: #006ee6;
     --text-main: #ffffff;
     --text-muted: #98989d;
+    
+    /* Dynamic Timer Colors */
+    --timer-color: #ffffff;
+    --timer-border: rgba(255, 255, 255, 0.15);
+    --timer-bg: rgba(255, 255, 255, 0.03);
+    --timer-glow: rgba(255, 255, 255, 0.05);
 }
 
 * {
@@ -83,9 +89,8 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 1.5rem;
+    padding: 15px;
     width: 100%;
-    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -107,16 +112,40 @@ body {
 .timer-display {
     font-family: 'Poppins', sans-serif;
     font-variant-numeric: tabular-nums;
-    font-size: min(32vw, 45vh); 
+    font-size: min(22vw, 35vh); 
     font-weight: 700;
     line-height: 1;
-    color: var(--text-main);
+    color: var(--timer-color);
     letter-spacing: -0.05em;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    width: 100%;
+    gap: 15px; 
+}
+
+.timer-block {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    border: 5px solid var(--timer-border);
+    border-radius: 20px;
+    background: var(--timer-bg);
+    box-shadow: 0 0 30px var(--timer-glow);
+}
+
+.timer-separator {
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.5);
+    padding-bottom: 5%; 
 }
 
 @media (min-width: 1200px) and (min-height: 800px) {
     .timer-display {
-        font-size: 320px;
+        font-size: 240px; 
     }
 }
 
@@ -361,4 +390,32 @@ body.times-up {
     }
     .controls-section { padding-bottom: 1vh; }
     .fullscreen-btn { top: 10px; right: 10px; padding: 5px; }
+}
+
+/* ========================================= */
+/* Color Presets                             */
+/* ========================================= */
+.color-presets {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.btn-color {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.btn-color:active {
+    transform: scale(0.85);
+}
+
+.btn-color.selected {
+    border: 2px solid #fff;
+    box-shadow: 0 0 10px rgba(255,255,255,0.5);
 }

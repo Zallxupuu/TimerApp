@@ -41,7 +41,23 @@ function saveState() {
 }
 
 function updateDisplay() {
-    mainTimer.textContent = formatTime(timeLeft);
+    let t = timeLeft < 0 ? 0 : timeLeft;
+    const m = Math.floor(t / 60).toString().padStart(2, '0');
+    const s = (t % 60).toString().padStart(2, '0');
+    
+    const m1 = m[0];
+    const m2 = m[1];
+    const s1 = s[0];
+    const s2 = s[1];
+    
+    mainTimer.innerHTML = `
+        <span class="timer-block">${m1}</span>
+        <span class="timer-block">${m2}</span>
+        <span class="timer-separator">:</span>
+        <span class="timer-block">${s1}</span>
+        <span class="timer-block">${s2}</span>
+    `;
+    
     if (timeLeft <= 10 && timeLeft > 0) {
         mainTimer.classList.add('danger');
     } else {
@@ -159,6 +175,39 @@ btnSetManual.addEventListener('click', () => {
     inputSec.value = '';
 });
 
+// --- Color Presets Logic ---
+const themeColors = {
+    white: { hex: '#ffffff', rgb: '255, 255, 255' },
+    green: { hex: '#32d74b', rgb: '50, 215, 75' },
+    blue: { hex: '#64d2ff', rgb: '100, 210, 255' },
+    pink: { hex: '#ff375f', rgb: '255, 55, 95' },
+    orange: { hex: '#ff9f0a', rgb: '255, 159, 10' }
+};
+
+const colorBtns = document.querySelectorAll('.btn-color');
+
+function setThemeColor(colorName) {
+    const c = themeColors[colorName];
+    if (!c) return;
+    
+    document.documentElement.style.setProperty('--timer-color', c.hex);
+    document.documentElement.style.setProperty('--timer-border', `rgba(${c.rgb}, 0.15)`);
+    document.documentElement.style.setProperty('--timer-bg', `rgba(${c.rgb}, 0.03)`);
+    document.documentElement.style.setProperty('--timer-glow', `rgba(${c.rgb}, 0.05)`);
+    
+    colorBtns.forEach(b => b.classList.remove('selected'));
+    const activeBtn = document.querySelector(`.btn-color[data-color="${colorName}"]`);
+    if (activeBtn) activeBtn.classList.add('selected');
+    
+    localStorage.setItem('timerColor', colorName);
+}
+
+colorBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        setThemeColor(btn.getAttribute('data-color'));
+    });
+});
+
 btnFullscreen.addEventListener('click', () => {
     if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(err => {
@@ -234,3 +283,6 @@ function loadState() {
 
 // Init
 loadState();
+
+const savedColor = localStorage.getItem('timerColor') || 'white';
+setThemeColor(savedColor);
